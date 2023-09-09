@@ -8,7 +8,7 @@ export const metadata = {
   description: "",
 };
 
-export default async function LogsLayout({
+export default async function InspectionLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -18,7 +18,6 @@ export default async function LogsLayout({
   if (!session) {
     redirect("/");
   }
-
   return (
     <section className="min-h-[80vh] w-full bg-[#F9FAFE] px-6 lg:px-12 py-6">
       {children}
