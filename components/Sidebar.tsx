@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -12,6 +13,8 @@ import {
 } from "react-icons/bs";
 
 export default function Sidebar() {
+  const { data }: any = useSession();
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const pathname = usePathname();
   const dateOptions = {
@@ -54,7 +57,7 @@ export default function Sidebar() {
   return (
     <div className="w-full lg:w-[250px] min-h-full px-6 py-10 flex flex-col justify-start items-center bg-white border border-[#D5D7D8] rounded-[10px]">
       <h3 className="font-monts font-medium text-base text-darkerGray">
-        Welcome back, <span className="text-primaryBlue">RO Makati</span>
+        Welcome back, <span className="text-primaryBlue">{data?.name}</span>
       </h3>
       <div className="flex flex-col items-center mt-4">
         <h1 className="font-monts font-medium text-[32px] text-darkerGray">

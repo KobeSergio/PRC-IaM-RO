@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Spinner from "../Spinner";
+import {Spinner} from "../Spinner";
 import { RiArrowDownSFill } from "react-icons/ri";
 
 export default function IMAT() {

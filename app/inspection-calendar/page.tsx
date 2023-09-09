@@ -444,9 +444,11 @@ export default function InspectionCalendar() {
 
               <div className="lg:overflow-y-auto w-full max-h-[25rem] justify-center items-center flex flex-col">
                 {filteredInspections.length == 0 ? (
-                  <h3 className="font-monts font-medium text-base text-center text-darkerGray">
-                    There are no items to display.
-                  </h3>
+                  <div className="flex justify-center items-center p-6">
+                    <h3 className="font-monts font-medium text-base text-center text-darkerGray">
+                      There are no items to display.
+                    </h3>
+                  </div>
                 ) : (
                   <>
                     {filteredInspections.map((row, index) => (

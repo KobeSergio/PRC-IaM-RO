@@ -34,15 +34,17 @@ export const authOptions: AuthOptions = {
       if (user) {
         token.ro_id = user.ro_id;
         token.createdAt = user.createdAt;
+        token.name = user.director;
         token.lastLoggedIn = user.lastLoggedIn;
       }
       return token;
     },
 
     async session({ session, token }: any) {
-      session.user.ro_id = token.ro_id;
-      session.user.createdAt = token.createdAt;
-      session.user.lastLoggedIn = token.lastLoggedIn;
+      session.ro_id = token.ro_id;
+      session.name = token.name;
+      session.createdAt = token.createdAt;
+      session.lastLoggedIn = token.lastLoggedIn;
       return session;
     },
   },

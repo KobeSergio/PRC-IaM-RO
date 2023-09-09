@@ -24,17 +24,19 @@ export default function Dashboard() {
   const { inspections } = useInspections();
   const { logs } = useLogs();
 
-  const { data } = useSession();
+  const { data }: any = useSession();
 
   const [filteredLogs, setFilteredLogs] = useState<Log[]>(logs);
   //Year sorter
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState("All" as any); // Default to current year
   const [years, setYears] = useState([currentYear]);
+
   const defaultInspections = inspections.filter(
     (inspection) =>
-      inspection.inspection_task.includes("Scheduling - RO") ||
-      inspection.inspection_task.includes("IMAT")
+      (inspection.inspection_task.includes("Scheduling - RO") ||
+        inspection.inspection_task.includes("IMAT")) &&
+      inspection.ro_details.ro_id == data?.ro_id
   );
 
   //This is the list of inspections that will be displayed
@@ -53,8 +55,9 @@ export default function Dashboard() {
       setFilteredInspections(
         inspections.filter(
           (inspection) =>
-            inspection.inspection_task.includes("Scheduling - RO") ||
-            inspection.inspection_task.includes("IMAT")
+            (inspection.inspection_task.includes("Scheduling - RO") ||
+              inspection.inspection_task.includes("IMAT")) &&
+            inspection.ro_details.ro_id == data?.ro_id
         )
       );
       setFilteredLogs(logs);
@@ -82,8 +85,10 @@ export default function Dashboard() {
     if (filteredInspections.length > 0) {
       const inspectionsByDate = defaultInspections.filter(
         (inspection) =>
-          new Date(inspection.inspection_date).getFullYear() ==
-          parseInt(selectedYear)
+          (selectedYear != "All"
+            ? new Date(inspection.inspection_date).getFullYear() ==
+              parseInt(selectedYear)
+            : true) && inspection.ro_details.ro_id == data?.ro_id
       );
 
       const _scheduling = inspectionsByDate.filter((inspection) =>
@@ -120,8 +125,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (logs.length != 0 && data != null) {
-      const user = data.user as any;
-      const _logs = logs.filter((log) => log.author_id == user.ro_id);
+      const user = data as any;
+      const _logs = logs.filter((log) => log.author_id == data?.ro_id);
 
       const accomplished = _logs.filter((log) =>
         log.action.includes("Accomplished")
@@ -159,7 +164,8 @@ export default function Dashboard() {
                 new Date(inspection.inspection_date).getFullYear() ==
                   parseInt(selectedYear) &&
                 (inspection.inspection_task.includes("Scheduling - RO") ||
-                  inspection.inspection_task.includes("IMAT"))
+                  inspection.inspection_task.includes("IMAT")) &&
+                inspection.ro_details.ro_id == data?.ro_id
             )
           );
         }
@@ -378,7 +384,9 @@ export default function Dashboard() {
                         {row.inspection_mode}
                       </h3>
                       <h3 className=" col-span-2 font-monts font-semibold text-sm text-center text-darkerGray px-4">
-                        {row.inspection_task}
+                        {
+                          row.inspection_task.replace(/<[^>]+>/g, "").trim() //Removes <>
+                        }
                       </h3>
                       <h3 className=" col-span-1 font-monts font-semibold text-sm text-center text-darkerGray px-4">
                         {row.inspection_date}

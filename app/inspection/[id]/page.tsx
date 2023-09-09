@@ -27,7 +27,7 @@ export default function Page({ params }: { params: { id: string } }) {
     {} as Inspection
   );
 
-  const { data } = useSession();
+  const { data }: any = useSession();
 
   useEffect(() => {
     if (params.id) {
@@ -64,9 +64,9 @@ export default function Page({ params }: { params: { id: string } }) {
   ) => {
     if (decision == 2 && (newDate == "" || reason == ""))
       return alert("Please fill out all fields.");
-    if (!data) return;
+    console.log(data);
+    if (!data.ro_id) return;
     setIsLoading(true);
-    const user = data.user as any;
     let inspection: Inspection = {} as Inspection;
     let log: Log = {} as Log;
     if (decision == 1) {
@@ -91,6 +91,10 @@ export default function Page({ params }: { params: { id: string } }) {
         inspection = {
           ...inspectionData,
           inspection_task: "For inspection recommendation",
+          //If the inspection task is "Scheduling - RO <date/reason>", get the date and set it as the inspection date
+          inspection_date: inspectionData.inspection_task.includes("<")
+            ? inspectionData.inspection_task.split("<")[1].split("/")[0]
+            : inspectionData.inspection_date,
         };
       } else {
         //Else, set inspection status to "For inspection recommendation"
@@ -98,6 +102,9 @@ export default function Page({ params }: { params: { id: string } }) {
           ...inspectionData,
           status: "Approved",
           inspection_task: "For NIM",
+          inspection_date: inspectionData.inspection_task.includes("<")
+            ? inspectionData.inspection_task.split("<")[1].split("/")[0]
+            : inspectionData.inspection_date,
         };
       }
     } else if (decision == 2) {
@@ -111,7 +118,7 @@ export default function Page({ params }: { params: { id: string } }) {
         action:
           "Scheduled a new inspection date at " +
           newDate +
-          "for the reason of: " +
+          " for the reason of: " +
           reason,
         author_type: "",
         author_id: "",
@@ -124,8 +131,9 @@ export default function Page({ params }: { params: { id: string } }) {
       };
     }
 
-    await firebase.createLog(log, user.ro_id);
+    await firebase.createLog(log, data.ro_id);
     await firebase.updateInspection(inspection);
+    setInspectionData(inspection);
     setIsLoading(false);
   };
 
@@ -165,7 +173,7 @@ export default function Page({ params }: { params: { id: string } }) {
       />
       <div className="min-h-[75vh] w-full flex flex-col gap-5">
         <Breadcrumbs items={breadcrumbItems} />
-        <div className="w-full bg-white border border-[#D5D7D8] flex flex-col rounded-[10px] p-6 gap-2">
+        <div className="w-full h-full bg-white border border-[#D5D7D8] flex flex-col rounded-[10px] p-6 gap-2">
           <div className="flex flex-row justify-between items-center">
             <h1 className="font-monts font-bold text-lg text-darkerGray">
               Inspection Details
@@ -194,6 +202,14 @@ export default function Page({ params }: { params: { id: string } }) {
               </h6>
               <p className="font-monts text-sm font-semibold text-darkerGray">
                 {inspectionData.client_details.address}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <h6 className="font-monts text-sm font-semibold text-darkGray">
+                RO Assigned
+              </h6>
+              <p className="font-monts text-sm font-semibold text-darkerGray">
+                {inspectionData.ro_details.office}
               </p>
             </div>
             <div className="flex flex-col gap-1">
@@ -266,20 +282,27 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
           )}
 
-        {task.includes("scheduling ") ? (
-          task.includes("ro") ? (
-            <ScheduleApproval
-              requestedDate={inspectionData.inspection_date}
-              decision={handleScheduleApproval}
-              isLoading={isLoading}
-            />
-          ) : (
-            <PendingNegotiation />
-          )
+        {task.includes("scheduling - ro") ? (
+          <ScheduleApproval
+            requestedDate={
+              //If the inspection task is "Scheduling - PRB <date/reason>", get the date
+              inspectionData.inspection_task.includes("<")
+                ? inspectionData.inspection_task.split("<")[1].split("/")[0]
+                : ""
+            }
+            reason={
+              //If the inspection task is "Scheduling - PRB <date/reason>", get the reason
+              inspectionData.inspection_task.includes("<")
+                ? inspectionData.inspection_task.split("<")[1].split("/")[1]
+                : ""
+            }
+            decision={handleScheduleApproval}
+            isLoading={isLoading}
+          />
         ) : task.includes("imat") ? (
           <IMAT />
         ) : (
-          <PendingWaiting />
+          <PendingWaiting task={task} />
         )}
       </div>
     </>

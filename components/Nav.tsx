@@ -1,22 +1,15 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 // import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 export default function Nav() {
-  const [toggle, setToggle] = useState(false);
-  const isLoggedIn = true;
-  const [providers, setProviders] = useState(null);
+  const { data }: any = useSession();
 
-  //   useEffect(() => {
-  //     (async () => {
-  //       const res = await getProviders();
-  //       setProviders(res);
-  //     })();
-  //   }, []);
-
+  console.log(data);
   return (
     <nav className="w-full relative z-40 bg-white shadow">
       <div className="justify-between px-6 lg:px-12 mx-auto lg:items-center lg:flex">
@@ -37,7 +30,7 @@ export default function Nav() {
           </div>
         </div>
         <h3 className="font-monts font-semibold text-base text-darkerGray">
-          RO Makati
+          {data?.name}
         </h3>
       </div>
     </nav>

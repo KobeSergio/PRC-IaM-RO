@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Spinner from "../Spinner";
+import { Spinner } from "../Spinner";
 
 function formatDate(dateString: string) {
   // Create a new Date object from the date string
@@ -71,7 +71,7 @@ export function ScheduleApproval({ requestedDate, decision, isLoading }: any) {
 
   if (page === 1) {
     return (
-      <div className="min-h-full bg-white border border-[#D5D7D8] flex flex-col justify-between rounded-[10px] p-6">
+      <div className="min-h-full gap-20 bg-white border border-[#D5D7D8] flex flex-col justify-between rounded-[10px] p-6">
         <div className="flex flex-col gap-5">
           <h1 className="font-monts font-bold text-lg text-darkerGray underline">
             Schedule Approval
@@ -99,12 +99,13 @@ export function ScheduleApproval({ requestedDate, decision, isLoading }: any) {
             onClick={() => decision(1, date, reason)}
             className="w-full md:w-fit flex items-center justify-center gap-2 cursor-pointer text-gray border bg-primaryBlue border-primaryBlue rounded-lg font-monts font-semibold text-sm text-white h-fit p-2.5"
           >
-            {isLoading && (
+            {isLoading ? (
               <>
                 <Spinner /> Submitting...
               </>
+            ) : (
+              <>Yes, the set time and date works fine </>
             )}
-            Yes, the set time and date works fine{" "}
           </button>
         </div>
       </div>
@@ -162,7 +163,13 @@ export function ScheduleApproval({ requestedDate, decision, isLoading }: any) {
             onClick={() => decision(2, date, reason)}
             className="w-full md:w-fit flex items-center justify-center gap-2 cursor-pointer text-gray border bg-primaryBlue border-primaryBlue rounded-lg font-monts font-semibold text-sm text-white h-fit p-2.5"
           >
-            Re-negotiate schedule
+            {isLoading ? (
+              <>
+                <Spinner /> Submitting...
+              </>
+            ) : (
+              <>Re-negotiate schedule</>
+            )}
           </button>
         </div>
       </div>
