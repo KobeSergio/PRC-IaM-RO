@@ -56,17 +56,17 @@ export default function CancellationRequest({
                         aria-label="reason"
                         onChange={(e) => setReason(e.target.value)}
                       >
-                        <option value="fortuitousEvents">
+                        <option value="Fortuitous Events">
                           Fortuitous Events
                         </option>
-                        <option value="conflict">
+                        <option value="Conflict with other official commission activities">
                           Conflict with other official commission activities
                         </option>
-                        <option value="emergencies">Emergencies</option>
-                        <option value="healthConcerns">
+                        <option value="Emergencies">Emergencies</option>
+                        <option value="Serious health concerns and other similar grounds">
                           Serious health concerns and other similar grounds
                         </option>
-                        <option value="others">Others</option>
+                        <option value="Others">Others</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <RiArrowDownSFill className="flex w-4 h-4 object-contain cursor-pointer" />
