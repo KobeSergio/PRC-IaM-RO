@@ -34,8 +34,8 @@ ACD Logs:
 Created a new account
 
 Accomplishable:
-Approved/Cancelled inspection recommendation
-Approved/Cancelled inspection cancellation
+Accomplished/Cancelled inspection recommendation
+Accomplished/Cancelled inspection cancellation
 Uploaded Travel/Office Order
 Uploaded COC
 
@@ -48,8 +48,8 @@ Missed COC
 *******************************************************************************
 OC Logs:
 Accomplishable:
-Approved/Cancelled inspection approval
-Approved/Cancelled inspection cancellation
+Accomplished/Cancelled inspection approval
+Accomplished/Cancelled inspection cancellation
 
 Missable:
 Missed inspection approval
@@ -89,7 +89,7 @@ COC - ACD < Missable >
 Inspection Statuses:
 
 PRE:
-Approved
+Accomplished
 Additional
 Random
 Cancelled

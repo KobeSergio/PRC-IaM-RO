@@ -19,9 +19,7 @@ import { RO } from "@/types/RO";
 const firebase = new Firebase();
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [showEditInspectionModal, setShowEditInspectionModal] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
-  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [inspectionData, setInspectionData] = useState<Inspection>(
     {} as Inspection
@@ -43,18 +41,64 @@ export default function Page({ params }: { params: { id: string } }) {
     }
   }, [params.id]);
 
-  const handleCloseCancellationRequest = () => {
-    setShowCancellationModal(false);
-  };
+  const handleSubmitCancellationRequest = async (
+    reason: string,
+    remarks: string
+  ) => {
+    //System shall allow the cancellation, if 1 is selected, must be at least seven (7) days before the day of inspection. If 2 is selected, at least one (1) month prior to the scheduled date of inspection.
+    if (reason != "others") {
+      const today = new Date();
+      const inspectionDate = new Date(inspectionData.inspection_date);
+      if (inspectionDate.getTime() - today.getTime() < 7 * 24 * 60 * 60 * 1000)
+        return alert(
+          "Inspection is scheduled within the next 7 days, the system shall not allow the cancellation of inspection."
+        );
+    } else {
+      //2.) If 1 is selected, must be at least seven (7) days before the day of inspection. If 2 is selected, at least one (1) month prior to the scheduled date of inspection.
+      const today = new Date();
+      const inspectionDate = new Date(inspectionData.inspection_date);
+      if (inspectionDate.getTime() - today.getTime() < 30 * 24 * 60 * 60 * 1000)
+        return alert(
+          "For other reasons, inspection is scheduled within the next 30 days, the system shall not allow the cancellation of inspection"
+        );
+    }
 
-  const handleSubmitCancellationRequest = () => {
-    //insert logic here
+    if (!reason || !remarks) return alert("Please fill out all fields.");
+    if (
+      !confirm(
+        "Are you sure you want to request for cancellation? This action can't be undone."
+      )
+    ) {
+      return;
+    }
+
     setIsLoading(true);
 
-    setTimeout(() => {
-      setShowCancellationModal(false);
-      setIsLoading(false);
-    }, 2000);
+    let inspection: Inspection = {} as Inspection;
+    let log: Log = {} as Log;
+
+    //1.) Create log
+    log = {
+      log_id: "",
+      timestamp: new Date().toLocaleString(),
+      client_details: inspectionData.client_details as Client,
+      author_details: inspectionData.ro_details,
+      action: "Requested for cancellation due to " + reason + ": " + remarks,
+      author_type: "",
+      author_id: "",
+    };
+
+    //2.) Update inspection
+    inspection = {
+      ...inspectionData,
+      inspection_task: `For cancellation recommendation <${reason}/${remarks}>`,
+    };
+
+    await firebase.createLog(log, data.ro_id);
+    await firebase.updateInspection(inspection);
+    setInspectionData(inspection);
+    setShowCancellationModal(false);
+    setIsLoading(false);
   };
 
   const handleScheduleApproval = async (
@@ -137,18 +181,6 @@ export default function Page({ params }: { params: { id: string } }) {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    const body = document.querySelector("body");
-    if (body) {
-      // null check added here
-      if (showEditInspectionModal) {
-        body.style.overflow = "hidden"; // Disable scrolling
-      } else {
-        body.style.overflow = "auto"; // Enable scrolling
-      }
-    }
-  }, [showEditInspectionModal]);
-
   if (Object.keys(inspectionData).length == 0) return <></>;
 
   const breadcrumbItems = [
@@ -167,7 +199,7 @@ export default function Page({ params }: { params: { id: string } }) {
     <>
       <CancellationRequest
         isOpen={showCancellationModal}
-        setter={handleCloseCancellationRequest}
+        setter={() => setShowCancellationModal(false)}
         isLoading={isLoading}
         onSubmit={handleSubmitCancellationRequest}
       />
@@ -230,14 +262,6 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
             <div className="flex flex-col gap-1">
               <h6 className="font-monts text-sm font-semibold text-darkGray">
-                Date Issued
-              </h6>
-              <p className="font-monts text-sm font-semibold text-darkerGray">
-                {inspectionData.createdAt}
-              </p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <h6 className="font-monts text-sm font-semibold text-darkGray">
                 Inspection Date
               </h6>
               <p className="font-monts text-sm font-semibold text-darkerGray">
@@ -263,15 +287,11 @@ export default function Page({ params }: { params: { id: string } }) {
           (task.includes("approval") ||
             inspectionData.inspection_task
               .toLowerCase()
-              .includes("recommendation")) && (
+              .includes("recommendation")) &&
+          !inspectionData.inspection_task
+            .toLowerCase()
+            .includes("cancellation") && (
             <div className="flex flex-row flex-wrap justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setShowRescheduleModal(true)}
-                className="w-full md:w-fit flex items-center justify-center gap-2 cursor-pointer text-gray border bg-primaryBlue border-primaryBlue rounded-lg font-monts font-semibold text-sm text-white h-fit p-2.5"
-              >
-                Request for rescheduling
-              </button>
               <button
                 type="button"
                 onClick={() => setShowCancellationModal(true)}
@@ -288,7 +308,7 @@ export default function Page({ params }: { params: { id: string } }) {
               //If the inspection task is "Scheduling - PRB <date/reason>", get the date
               inspectionData.inspection_task.includes("<")
                 ? inspectionData.inspection_task.split("<")[1].split("/")[0]
-                : ""
+                : inspectionData.inspection_date
             }
             reason={
               //If the inspection task is "Scheduling - PRB <date/reason>", get the reason

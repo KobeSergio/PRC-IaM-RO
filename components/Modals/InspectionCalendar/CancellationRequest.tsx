@@ -1,4 +1,4 @@
-import {Spinner} from "@/components/Spinner";
+import { Spinner } from "@/components/Spinner";
 import React, { useState } from "react";
 
 import { BsX } from "react-icons/bs";
@@ -10,7 +10,8 @@ export default function CancellationRequest({
   isLoading,
   onSubmit,
 }: any) {
-
+  const [reason, setReason] = useState("Others");
+  const [remarks, setRemarks] = useState("");
   if (isOpen === false) {
     return <></>;
   }
@@ -53,10 +54,20 @@ export default function CancellationRequest({
                         className="block cursor-pointer appearance-none w-full text-gray border bg-white border-[#D5D7D8] rounded-lg font-monts font-medium text-sm text-[#7C7C7C] h-fit p-2.5 pr-6 outline-none"
                         id="reason"
                         aria-label="reason"
+                        onChange={(e) => setReason(e.target.value)}
                       >
+                        <option value="fortuitousEvents">
+                          Fortuitous Events
+                        </option>
+                        <option value="conflict">
+                          Conflict with other official commission activities
+                        </option>
+                        <option value="emergencies">Emergencies</option>
+                        <option value="healthConcerns">
+                          Serious health concerns and other similar grounds
+                        </option>
                         <option value="others">Others</option>
                       </select>
-
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <RiArrowDownSFill className="flex w-4 h-4 object-contain cursor-pointer" />
                       </div>
@@ -67,10 +78,12 @@ export default function CancellationRequest({
                       Remarks:
                     </h6>
                     <textarea
+                      onChange={(e) => setRemarks(e.target.value)}
+                      value={remarks}
                       title="remarks"
                       rows={4}
                       className="text-[#7C7C7C] border border-[#D5D7D8] rounded-[8px] font-monts font-medium text-[14px] leading-[20px] block w-full p-2.5 outline-none"
-                      />
+                    />
                   </div>
                 </div>
               </div>
@@ -89,7 +102,9 @@ export default function CancellationRequest({
                   isLoading ? "flex items-center gap-0.5" : ""
                 } py-2 px-4 font-monts font-semibold text-sm text-white bg-[#3C6497] rounded-lg outline-none`}
                 type="button"
-                onClick={onSubmit}
+                onClick={() => {
+                  onSubmit(reason, remarks);
+                }}
               >
                 {isLoading ? (
                   <>

@@ -8,6 +8,10 @@ export default function PendingWaiting({ task }: any) {
       "Inspection schedule is pending, you can follow up directly to the PRB assigned to the inspection.";
   }
 
+  if (task.toLowerCase().includes("cancellation recommendation")) {
+    taskContent = "Inspection cancellation is being reviewed by ACD";
+  }
+
   if (task.toLowerCase().includes("inspection recommendation")) {
     taskContent = "Inspection is being reviewed by ACD";
   }
