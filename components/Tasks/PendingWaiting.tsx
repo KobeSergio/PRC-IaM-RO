@@ -28,6 +28,21 @@ export default function PendingWaiting({ task }: any) {
     taskContent = "This inspection has been cancelled.";
   }
 
+  if (
+    task.toLowerCase().includes("vs") ||
+    task.toLowerCase().includes("imat")
+  ) {
+    taskContent =
+      "Nothing to do here. Accomplish post-inspection tasks after the inspection is done.";
+  }
+
+  if (
+    task.toLowerCase().includes("coc") ||
+    task.toLowerCase().includes("imwpr")
+  ) {
+    taskContent =
+      "Waiting for the PRB and ACD to upload their post-inspection reports";
+  }
 
   return (
     <div className="h-fit lg:h-[45vh] bg-white border border-[#D5D7D8] flex flex-col rounded-[10px] p-6 gap-2">

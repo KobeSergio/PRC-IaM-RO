@@ -2,7 +2,7 @@
 
 import Breadcrumbs from "@/components/Breadcrumbs";
 import CancellationRequest from "@/components/Modals/InspectionCalendar/CancellationRequest";
-import IMAT from "@/components/Tasks/IMAT";
+import IMATVS from "@/components/Tasks/IMAT";
 import PendingWaiting from "@/components/Tasks/PendingWaiting";
 import {
   ScheduleApproval,
@@ -338,8 +338,13 @@ export default function Page({ params }: { params: { id: string } }) {
             decision={handleScheduleApproval}
             isLoading={isLoading}
           />
-        ) : task.includes("imat") ? (
-          <IMAT />
+        ) : new Date().getTime() -
+            new Date(inspectionData.inspection_date).getTime() >=
+            0 && task.includes("imat") ? (
+          <IMATVS
+            inspection_id={inspectionData.inspection_id}
+            handlesubmittedIMATVS={null}
+          />
         ) : (
           <PendingWaiting task={task} />
         )}
