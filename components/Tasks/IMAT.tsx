@@ -29,7 +29,7 @@ export default function IMATVS({
 
   const [file, setFile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [authorizedPersonel, setAuthorizedPersonel] = useState("");
+  const [authorizedPersonnel, setAuthorizedPersonel] = useState("");
   const [position, setPosition] = useState("");
 
   const removeFile = () => {
@@ -174,7 +174,7 @@ export default function IMATVS({
       employees.some((employee) => employee.qualifications == "") ||
       employees.some((employee) => employee.scopeOfWork == "") ||
       employees.some((employee) => employee.workload == "") ||
-      authorizedPersonel == "" ||
+      authorizedPersonnel == "" ||
       position == ""
     ) {
       alert("Please fill up all the fields");
@@ -186,7 +186,7 @@ export default function IMATVS({
     await firebase.uploadVS(file, inspection_id);
 
     const IMAT: IMAT = {
-      authorizedPersonnel: authorizedPersonel,
+      authorizedPersonnel: authorizedPersonnel,
       position: position,
       registeredProfessionals: registeredProfessionals,
       employees: employees,
@@ -210,7 +210,7 @@ export default function IMATVS({
             </h6>
             <input
               type="text"
-              value={authorizedPersonel}
+              value={authorizedPersonnel}
               onChange={(e) => setAuthorizedPersonel(e.target.value)}
               className="text-darkerGray border border-[#D5D7D8] rounded-[8px] font-monts font-medium text-[14px] leading-[20px] block  p-2.5 outline-none"
             />

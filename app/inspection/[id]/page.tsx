@@ -19,6 +19,7 @@ import { RO } from "@/types/RO";
 import { extractFilenameFromFirebaseURL } from "@/lib/filenameExtractor";
 import { formatDateToDash } from "@/lib/formatDates";
 import { IMAT } from "@/types/IMAT";
+import InspectionSummary from "@/components/Tasks/InspectionSummary";
 const firebase = new Firebase();
 
 type registeredProfessional = {
@@ -228,11 +229,23 @@ export default function Page({ params }: { params: { id: string } }) {
 
     //2.) Update inspection
     let inspection: Inspection = {} as Inspection;
-    inspection = {
-      ...inspectionData,
-      inspection_task: inspectionData.inspection_task.replace("IMAT", ""), // Remove IMAT and VS in the inspection task
-      inspection_IMAT: IMAT as any, //This should be in IMAT format
-    };
+
+    if (
+      //If there are remaining tasks from other parties
+      inspectionData.inspection_task.includes("IMWPR")
+    ) {
+      inspection = {
+        ...inspectionData,
+        inspection_task: inspectionData.inspection_task.replace("IMAT", ""), // Remove IMAT and VS in the inspection task
+        inspection_IMAT: IMAT as any, //This should be in IMAT format
+      };
+    } else {
+      inspection = {
+        ...inspectionData,
+        inspection_task: "Inspection Finished", // Remove IMAT and VS in the inspection task
+        inspection_IMAT: IMAT as any, //This should be in IMAT format
+      };
+    }
 
     await firebase.createLog(log, data.ro_id);
     await firebase.updateInspection(inspection);
@@ -263,7 +276,7 @@ export default function Page({ params }: { params: { id: string } }) {
       />
       <div className="min-h-[75vh] w-full flex flex-col gap-5">
         <Breadcrumbs items={breadcrumbItems} />
-        <div className="w-full h-full bg-white border border-[#D5D7D8] flex flex-col rounded-[10px] p-6 gap-2">
+        <div className="w-full bg-white border border-[#D5D7D8] flex flex-col rounded-[10px] p-6 gap-2">
           <div className="flex flex-row justify-between items-center">
             <h1 className="font-monts font-bold text-lg text-darkerGray">
               Inspection Details
@@ -296,14 +309,6 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
             <div className="flex flex-col gap-1">
               <h6 className="font-monts text-sm font-semibold text-darkGray">
-                RO Assigned
-              </h6>
-              <p className="font-monts text-sm font-semibold text-darkerGray">
-                {inspectionData.ro_details.office}
-              </p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <h6 className="font-monts text-sm font-semibold text-darkGray">
                 Email
               </h6>
               <p className="font-monts text-sm font-semibold text-primaryBlue hover:underline">
@@ -320,17 +325,25 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
             <div className="flex flex-col gap-1">
               <h6 className="font-monts text-sm font-semibold text-darkGray">
+                Date Issued
+              </h6>
+              <p className="font-monts text-sm font-semibold text-darkerGray">
+                {formatDateToDash(new Date(inspectionData.createdAt))}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <h6 className="font-monts text-sm font-semibold text-darkGray">
                 Inspection Date
               </h6>
               <p className="font-monts text-sm font-semibold text-darkerGray">
-                {inspectionData.inspection_task.includes("Scheduling")
+                {inspectionData.inspection_task == "Scheduling"
                   ? "TBD"
                   : inspectionData.inspection_date}
               </p>
             </div>
           </div>
-          {inspectionData.inspection_TO !== "" && (
-            <div className="flex w-full justify-end">
+          <div className="flex w-full justify-between mt-4">
+            {inspectionData.inspection_TO !== "" && (
               <h6 className="font-monts text-sm font-semibold text-darkerGray">
                 Travel/Office Order No.:{" "}
                 <a
@@ -342,8 +355,23 @@ export default function Page({ params }: { params: { id: string } }) {
                   {extractFilenameFromFirebaseURL(inspectionData.inspection_TO)}
                 </a>
               </h6>
-            </div>
-          )}
+            )}
+            {inspectionData.inspection_COC !== "" && (
+              <h6 className="font-monts text-sm font-semibold text-darkerGray">
+                Certificate of Compliance is valid until{" "}
+                {
+                  //Add 5 years to the fulfilledAt date
+                  formatDateToDash(
+                    new Date(
+                      new Date(inspectionData.fulfilledAt).setFullYear(
+                        new Date(inspectionData.fulfilledAt).getFullYear() + 5
+                      )
+                    )
+                  )
+                }
+              </h6>
+            )}
+          </div>
         </div>
 
         {/* If inspection data is scheduling and if a cancellation/rescheduling request is already ongoing, dont show the btns */}
@@ -391,6 +419,10 @@ export default function Page({ params }: { params: { id: string } }) {
             inspection_id={inspectionData.inspection_id}
             handlesubmittedIMATVS={handlesubmittedIMATVS}
           />
+        ) : task.includes("finished") ? (
+          <>
+            <InspectionSummary inspectionDetails={inspectionData} />
+          </>
         ) : (
           <PendingWaiting task={task} />
         )}
