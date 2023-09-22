@@ -6,30 +6,16 @@ const firebase = new Firebase();
 
 import { useState, useEffect } from "react";
 
-type registeredProfessionals = {
-  name: string;
-  licenseNo: string;
-  dateOfValidity: string;
-  certDisplayed: string;
-  cpdCompliant: string;
-  aipoMember: string;
-  scopeOfWork: string;
-  workload: string;
-};
-
-type employees = {
-  name: string;
-  qualifications: string;
-  scopeOfWork: string;
-  workload: string;
-};
+import { registeredProfessional } from "@/types/RegisteredProfessional";
+import { employee } from "@/types/Employee";
+import { IMAT } from "@/types/IMAT";
 
 export default function IMATVS({
   inspection_id,
   handlesubmittedIMATVS,
 }: {
   inspection_id: string;
-  handlesubmittedIMATVS: any;
+  handlesubmittedIMATVS: (IMAT: any) => Promise<void>;
 }) {
   const { getRootProps, getInputProps, acceptedFiles, isDragActive } =
     useDropzone({
@@ -43,6 +29,8 @@ export default function IMATVS({
 
   const [file, setFile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [authorizedPersonel, setAuthorizedPersonel] = useState("");
+  const [position, setPosition] = useState("");
 
   const removeFile = () => {
     setFile(null);
@@ -61,17 +49,18 @@ export default function IMATVS({
   }, [acceptedFiles]);
 
   const [registeredProfessionals, setRegisteredProfessionals] = useState<
-    registeredProfessionals[]
+    registeredProfessional[]
   >([
     {
       name: "",
       licenseNo: "",
       dateOfValidity: "",
-      certDisplayed: "",
-      cpdCompliant: "",
-      aipoMember: "",
+      certDisplayed: "displayed",
+      cpdCompliant: "non compliant",
+      aipoMember: "active",
       scopeOfWork: "",
       workload: "",
+      otherReqs: "",
     },
   ]);
 
@@ -92,11 +81,12 @@ export default function IMATVS({
         name: "",
         licenseNo: "",
         dateOfValidity: "",
-        certDisplayed: "",
-        cpdCompliant: "",
-        aipoMember: "",
+        certDisplayed: "displayed",
+        cpdCompliant: "non compliant",
+        aipoMember: "active",
         scopeOfWork: "",
         workload: "",
+        otherReqs: "",
       },
     ]);
   };
@@ -113,7 +103,7 @@ export default function IMATVS({
     setRegisteredProfessionals(list);
   };
 
-  const [employees, setEmployees] = useState<employees[]>([
+  const [employees, setEmployees] = useState<employee[]>([
     {
       name: "",
       qualifications: "",
@@ -135,14 +125,59 @@ export default function IMATVS({
   };
 
   const handleEmployees = (index: number, key: string, value: any) => {
-    const list = [...registeredProfessionals] as any;
+    const list = [...employees] as any;
     list[index][key] = value;
     setEmployees(list);
   };
 
   const onSubmit = async () => {
     if (file == null) {
-      alert("Please upload a file");
+      alert("Please upload the verification statement");
+      return;
+    }
+    if (registeredProfessionals.length == 0) {
+      alert("Please add at least one registered professional");
+      return;
+    }
+    if (employees.length == 0) {
+      alert("Please add at least one employee");
+      return;
+    }
+
+    console.log(registeredProfessionals, employees);
+    if (
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.name == ""
+      ) ||
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.licenseNo == ""
+      ) ||
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.dateOfValidity == ""
+      ) ||
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.certDisplayed == ""
+      ) ||
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.cpdCompliant == ""
+      ) ||
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.aipoMember == ""
+      ) ||
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.scopeOfWork == ""
+      ) ||
+      registeredProfessionals.some(
+        (registeredProfessional) => registeredProfessional.workload == ""
+      ) ||
+      employees.some((employee) => employee.name == "") ||
+      employees.some((employee) => employee.qualifications == "") ||
+      employees.some((employee) => employee.scopeOfWork == "") ||
+      employees.some((employee) => employee.workload == "") ||
+      authorizedPersonel == "" ||
+      position == ""
+    ) {
+      alert("Please fill up all the fields");
       return;
     }
 
@@ -150,7 +185,14 @@ export default function IMATVS({
 
     await firebase.uploadVS(file, inspection_id);
 
-    await handlesubmittedIMATVS();
+    const IMAT: IMAT = {
+      authorizedPersonnel: authorizedPersonel,
+      position: position,
+      registeredProfessionals: registeredProfessionals,
+      employees: employees,
+    };
+    
+    await handlesubmittedIMATVS(IMAT);
 
     setIsLoading(false);
   };
@@ -168,9 +210,8 @@ export default function IMATVS({
             </h6>
             <input
               type="text"
-              id=""
-              title="text"
-              placeholder="John Doe"
+              value={authorizedPersonel}
+              onChange={(e) => setAuthorizedPersonel(e.target.value)}
               className="text-darkerGray border border-[#D5D7D8] rounded-[8px] font-monts font-medium text-[14px] leading-[20px] block  p-2.5 outline-none"
             />
           </div>
@@ -180,9 +221,8 @@ export default function IMATVS({
             </h6>
             <input
               type="text"
-              id=""
-              title="text"
-              placeholder="John Doe"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
               className="text-darkerGray border border-[#D5D7D8] rounded-[8px] font-monts font-medium text-[14px] leading-[20px] block  p-2.5 outline-none"
             />
           </div>
@@ -269,6 +309,7 @@ export default function IMATVS({
                       >
                         <option value="displayed">Displayed</option>
                         <option value="not displayed">Not Displayed</option>
+                        <option value="not applicable">Not Applicable</option>
                       </select>
 
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -295,7 +336,8 @@ export default function IMATVS({
                         aria-label="cpd"
                       >
                         <option value="compliant">Compliant</option>
-                        <option value="non-compliant">Non-compliant</option>
+                        <option value="non compliant">Non compliant</option>
+                        <option value="not applicable">Not Applicable</option>
                       </select>
 
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -321,8 +363,9 @@ export default function IMATVS({
                         id="member"
                         aria-label="member"
                       >
-                        <option value="member">Member</option>
-                        <option value="non-member">Non-member</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="not applicable">Not Applicable</option>
                       </select>
 
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -330,18 +373,23 @@ export default function IMATVS({
                       </div>
                     </div>
                   </div>
-                  {/* <div className="w-full flex flex-col space-y-4">
-            <h6 className="font-monts font-semibold text-sm text-darkerGray">
-              Other requirements:
-            </h6>
-            <input
-              type="text"
-              id=""
-              title="text"
-              placeholder="Optional"
-              className="text-darkerGray border border-[#D5D7D8] rounded-[8px] font-monts font-medium text-[14px] leading-[20px] block  p-2.5 outline-none"
-            />
-          </div> */}
+                  <div className="w-full flex flex-col space-y-4">
+                    <h6 className="font-monts font-semibold text-sm text-darkerGray">
+                      Other requirements:
+                    </h6>
+                    <input
+                      type="text"
+                      onChange={(e) =>
+                        handleRegisteredProfessionals(
+                          index,
+                          "otherReqs",
+                          e.target.value
+                        )
+                      }
+                      placeholder="Optional"
+                      className="text-darkerGray border border-[#D5D7D8] rounded-[8px] font-monts font-medium text-[14px] leading-[20px] block  p-2.5 outline-none"
+                    />
+                  </div>
                 </div>
                 <div className="flex flex-col lg:flex-row justify-between gap-4">
                   <div className="w-full flex flex-col space-y-4">
@@ -534,15 +582,10 @@ export default function IMATVS({
         <div className="flex flex-row flex-wrap justify-end gap-2">
           <button
             type="button"
-            className="w-full md:w-fit flex items-center justify-center gap-2 cursor-pointer text-gray border bg-[#973C3C] border-[#973C3C] rounded-lg font-monts font-semibold text-sm text-white h-fit p-2.5"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
+            onClick={() => onSubmit()}
             className="w-full md:w-fit flex items-center justify-center gap-2 cursor-pointer text-gray border bg-primaryBlue border-primaryBlue rounded-lg font-monts font-semibold text-sm text-white h-fit p-2.5"
           >
-            Proceed
+            {isLoading ? <Spinner /> : "Submit"}
           </button>
         </div>
       </form>

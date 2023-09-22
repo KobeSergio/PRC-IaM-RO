@@ -18,7 +18,27 @@ import { useSession } from "next-auth/react";
 import { RO } from "@/types/RO";
 import { extractFilenameFromFirebaseURL } from "@/lib/filenameExtractor";
 import { formatDateToDash } from "@/lib/formatDates";
+import { IMAT } from "@/types/IMAT";
 const firebase = new Firebase();
+
+type registeredProfessional = {
+  name: string;
+  licenseNo: string;
+  dateOfValidity: string;
+  certDisplayed: string;
+  cpdCompliant: string;
+  aipoMember: string;
+  scopeOfWork: string;
+  workload: string;
+  otherReqs: string;
+};
+
+type employee = {
+  name: string;
+  qualifications: string;
+  scopeOfWork: string;
+  workload: string;
+};
 
 export default function Page({ params }: { params: { id: string } }) {
   const [showCancellationModal, setShowCancellationModal] = useState(false);
@@ -193,6 +213,32 @@ export default function Page({ params }: { params: { id: string } }) {
     setIsLoading(false);
   };
 
+  const handlesubmittedIMATVS = async (IMAT: IMAT) => {
+    //1.) Create log
+    let log: Log = {} as Log;
+    log = {
+      log_id: "",
+      timestamp: new Date().toLocaleString(),
+      client_details: inspectionData.client_details as Client,
+      author_details: inspectionData.ro_details,
+      action: "Accomplished IMAT/VS",
+      author_type: "",
+      author_id: "",
+    };
+
+    //2.) Update inspection
+    let inspection: Inspection = {} as Inspection;
+    inspection = {
+      ...inspectionData,
+      inspection_task: inspectionData.inspection_task.replace("IMAT", ""), // Remove IMAT and VS in the inspection task
+      inspection_IMAT: IMAT as any, //This should be in IMAT format
+    };
+
+    await firebase.createLog(log, data.ro_id);
+    await firebase.updateInspection(inspection);
+    setInspectionData(inspection);
+  };
+
   if (Object.keys(inspectionData).length == 0) return <></>;
 
   const breadcrumbItems = [
@@ -343,7 +389,7 @@ export default function Page({ params }: { params: { id: string } }) {
             0 && task.includes("imat") ? (
           <IMATVS
             inspection_id={inspectionData.inspection_id}
-            handlesubmittedIMATVS={null}
+            handlesubmittedIMATVS={handlesubmittedIMATVS}
           />
         ) : (
           <PendingWaiting task={task} />
