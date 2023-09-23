@@ -403,7 +403,11 @@ export default function Dashboard() {
                         </h3>
                         <h3 className=" col-span-2 font-monts font-semibold text-sm text-center text-darkerGray px-4">
                           {
-                            row.inspection_task.replace(/<[^>]+>/g, "").trim() //Removes <>
+                            row.inspection_task.includes("NIM")
+                              ? "For NIM and VS"
+                              : row.inspection_task
+                                  .replace(/<[^>]+>/g, "")
+                                  .trim() //Removes <>
                           }
                         </h3>
                         <h3 className="flex justify-center  col-span-2 font-monts font-semibold text-sm text-center text-darkerGray px-4">
