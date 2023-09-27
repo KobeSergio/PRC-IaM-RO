@@ -95,10 +95,7 @@ export default function InspectionCalendar() {
       }
     }
   }, [search]);
-
-  const inspectionsWithTags = inspections.filter(
-    (inspection) => inspection.status != "Pending"
-  );
+ 
 
   const [preInspectionData, setPreInspectionData] = useState({
     labels: ["Rescheduled", "Cancelled", "Random", "Approved/Additional"],
@@ -145,13 +142,13 @@ export default function InspectionCalendar() {
       (inspection) => inspection.status == "Non-compliant"
     );
     const forComplianceInspections = inspections.filter(
-      (inspection) => inspection.status == "For compliance"
+      (inspection) => inspection.status == "For-compliance"
     );
     const compliantInspections = inspections.filter(
       (inspection) => inspection.status == "Compliant"
     );
     const underReviewInspections = inspections.filter(
-      (inspection) => inspection.status == "Under review"
+      (inspection) => inspection.status == "Pending"
     );
 
     setPreInspectionData({
@@ -451,9 +448,8 @@ export default function InspectionCalendar() {
                 <h3 className="col-span-1 font-monts font-semibold text-sm text-center text-[#5C5C5C] px-4 pr-0">
                   {""}
                 </h3>
-              </div>
-
-              <div className="lg:overflow-y-auto w-full max-h-[25rem] justify-center items-center flex flex-col">
+              </div> 
+              <div className="lg:overflow-y-auto w-full max-h-[25rem]">
                 {filteredInspections.length == 0 ? (
                   <div className="flex justify-center items-center p-6">
                     <h3 className="font-monts font-medium text-base text-center text-darkerGray">

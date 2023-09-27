@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import Firebase from "@/lib/firebase";
 import { LogContext } from "@/contexts/LogContext";
 import { Log } from "@/types/Log";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 const firebase = new Firebase();
 
 type InspectionProviderProps = {
@@ -23,18 +23,24 @@ export const InspectionProvider: React.FC<InspectionProviderProps> = ({
   //Declare contexts here (Inspections and prb from local storage)
   const [inspections, setInspections] = useState<Inspection[]>([]);
 
+  const { data }: any = useSession();
+
   useEffect(() => {
     if (inspections.length == 0) {
       firebase
         .getAllInspections()
-        .then((data) => {
-          setInspections(data);
+        .then((inspectionData) => {
+          setInspections(
+            inspectionData.filter(
+              (inspection) => inspection.ro_details.email == data?.user.email
+            )
+          );
         })
         .catch((error) => {
           console.log(error);
         });
     }
-  }, []);
+  }, [data]);
 
   return (
     <InspectionContext.Provider value={{ inspections, setInspections }}>
@@ -81,7 +87,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <link rel="icon" href="/assets/icons/favicon.svg" sizes="any" />
-      <title>PRC Inspection and Monitoring System</title>
+      <title>RO BOND IaM</title>
       <body>
         <SessionProvider>
           <InspectionProvider>

@@ -55,7 +55,7 @@ export default function Sidebar() {
   }, []);
 
   return (
-    <div className="w-full lg:w-[250px] min-h-full px-6 py-10 flex flex-col justify-start items-center bg-white border border-[#D5D7D8] rounded-[10px]">
+    <div className="w-full min-h-full px-6 py-10 flex flex-col justify-start items-center bg-white border border-[#D5D7D8] rounded-[10px]">
       <h3 className="font-monts font-medium text-base text-darkerGray">
         Welcome back, <span className="text-primaryBlue">{data?.name}</span>
       </h3>

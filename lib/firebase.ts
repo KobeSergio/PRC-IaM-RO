@@ -75,7 +75,7 @@ export default class Firebase {
       }
       return { status: 401 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 500 };
     }
   }
@@ -92,7 +92,7 @@ export default class Firebase {
       const [prb, ro, oc] = await Promise.all(userPromises);
       return { PRB: prb, RO: ro, OC: oc } as any;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }
@@ -110,7 +110,7 @@ export default class Firebase {
       });
       return clients;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }
@@ -147,7 +147,7 @@ export default class Firebase {
 
       return inspections;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }
@@ -183,11 +183,11 @@ export default class Firebase {
 
         return data;
       } else {
-        console.log("No such document!");
+        // console.log("No such document!");
         return null;
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
     }
   }
@@ -201,11 +201,11 @@ export default class Firebase {
       if (docSnap.exists()) {
         return docSnap.data() as Client;
       } else {
-        console.log("No such document!");
+        // console.log("No such document!");
         return null;
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
     }
   }
@@ -219,11 +219,11 @@ export default class Firebase {
       if (docSnap.exists()) {
         return docSnap.data() as RO;
       } else {
-        console.log("No such document!");
+        // console.log("No such document!");
         return null;
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
     }
   }
@@ -237,11 +237,11 @@ export default class Firebase {
       if (docSnap.exists()) {
         return docSnap.data() as PRB;
       } else {
-        console.log("No such document!");
+        // console.log("No such document!");
         return null;
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
     }
   }
@@ -255,11 +255,11 @@ export default class Firebase {
       if (docSnap.exists()) {
         return docSnap.data() as OC;
       } else {
-        console.log("No such document!");
+        // console.log("No such document!");
         return null;
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
     }
   }
@@ -273,11 +273,11 @@ export default class Firebase {
       if (docSnap.exists()) {
         return docSnap.data() as ACD;
       } else {
-        console.log("No such document!");
+        // console.log("No such document!");
         return null;
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return null;
     }
   }
@@ -295,7 +295,7 @@ export default class Firebase {
       });
       return ro;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }
@@ -313,7 +313,7 @@ export default class Firebase {
       });
       return prb;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }
@@ -331,7 +331,7 @@ export default class Firebase {
       });
       return oc;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }
@@ -366,7 +366,7 @@ export default class Firebase {
       }
       return logs;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return [];
     }
   }
@@ -384,7 +384,7 @@ export default class Firebase {
       });
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -401,7 +401,7 @@ export default class Firebase {
       });
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -418,7 +418,7 @@ export default class Firebase {
       });
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -435,7 +435,7 @@ export default class Firebase {
       });
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -452,7 +452,7 @@ export default class Firebase {
       });
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -471,7 +471,7 @@ export default class Firebase {
       });
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -486,7 +486,7 @@ export default class Firebase {
       });
       return { status: 200, client: client };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -501,7 +501,7 @@ export default class Firebase {
       });
       return { status: 200, ro: ro };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -516,7 +516,7 @@ export default class Firebase {
       });
       return { status: 200, prb: prb };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -531,7 +531,7 @@ export default class Firebase {
       });
       return { status: 200, oc: oc };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -544,7 +544,7 @@ export default class Firebase {
       await updateDoc(docRef, { ...inspection });
       return { status: 200, inspection: inspection };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -556,7 +556,7 @@ export default class Firebase {
       await deleteDoc(doc(db, "prb", prb_id));
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -568,7 +568,7 @@ export default class Firebase {
       await deleteDoc(doc(db, "ro", ro_id));
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
@@ -580,7 +580,7 @@ export default class Firebase {
       await deleteDoc(doc(db, "oc", oc_id));
       return { status: 200 };
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return { status: 400 };
     }
   }
