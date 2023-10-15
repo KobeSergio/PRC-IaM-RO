@@ -24,6 +24,10 @@ export default function PendingWaiting({ task }: any) {
     taskContent = "Waiting for the requirements from the client";
   }
 
+  if (task.toLowerCase().includes("nim")) {
+    taskContent = "Inspection NIM is being prepared to send";
+  }
+
   if (task.toLowerCase().includes("cancelled")) {
     taskContent = "This inspection has been cancelled.";
   }
