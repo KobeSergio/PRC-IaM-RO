@@ -48,6 +48,10 @@ export default function PendingWaiting({ task }: any) {
       "Waiting for the PRB and ACD to upload their post-inspection reports";
   }
 
+  if (task.toLowerCase().includes("finished")) {
+    taskContent = "Waiting for the ACD to upload their post-inspection reports";
+  }
+
   return (
     <div className="h-fit lg:h-[45vh] bg-white border border-[#D5D7D8] flex flex-col rounded-[10px] p-6 gap-2">
       <h1 className="font-monts font-bold text-lg text-darkerGray underline">

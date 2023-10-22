@@ -1,7 +1,7 @@
 import "../../styles/globals.css";
 
 export const metadata = {
-  title: "PRC Inspection and Monitoring System",
+  title: "RO BOND IaM",
   description: "",
 };
 
